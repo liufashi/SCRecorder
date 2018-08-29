@@ -20,6 +20,11 @@
 
 // Convenience
 #import "SCRecorderHeader.h"
+@protocol SCRecorderDataOutputSampleBufferDelegate <NSObject>
+
+- (void)SCRecordercaptureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection;
+
+@end
 
 @interface SCRecorder : NSObject<AVCaptureAudioDataOutputSampleBufferDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureFileOutputRecordingDelegate>
 
@@ -91,7 +96,7 @@
 /**
  Get the current focus mode used by the camera device
  */
-@property (readonly, nonatomic) AVCaptureFocusMode focusMode;
+@property (assign, nonatomic) AVCaptureFocusMode focusMode;
 
 /**
  Will be true if the camera is adjusting the focus.
@@ -239,7 +244,7 @@
 /**
  The current focus point of interest
  */
-@property (readonly, nonatomic) CGPoint focusPointOfInterest;
+@property (assign, nonatomic) CGPoint focusPointOfInterest;
 
 /**
  Will be true if the recorder is currently performing a focus because
@@ -286,6 +291,11 @@
  If an error occured during the creation of the captureSession, this methods will return NO.
  */
 - (BOOL)prepare:(NSError *__nullable *__nullable)error;
+
+/**
+ Switch between the camera devices
+ */
+- (void)changeCameraInputDeviceisFront:(BOOL)isFront;
 
 /**
  Close and destroy the AVCaptureSession.
@@ -425,5 +435,12 @@
  Returns whether the current queue is the record session queue.
  */
 + (BOOL)isSessionQueue;
+
+- (AVCaptureDevice *_Nullable)audioDevice;
+
+- (AVCaptureDevice *_Nullable)videoDevice;
+
+
+@property (weak, nonatomic) id<SCRecorderDataOutputSampleBufferDelegate>SCRorderdelegate;
 
 @end

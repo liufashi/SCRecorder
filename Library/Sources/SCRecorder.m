@@ -828,6 +828,11 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+    
+    if (captureOutput == _videoOutput && _SCRorderdelegate && [_SCRorderdelegate respondsToSelector:@selector(SCRecordercaptureOutput:didOutputSampleBuffer:fromConnection:)]) {
+        [_SCRorderdelegate SCRecordercaptureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:sampleBuffer fromConnection:(AVCaptureConnection *)connection];
+    }
+    
     if (captureOutput == _videoOutput) {
         _lastVideoBuffer.sampleBuffer = sampleBuffer;
 //        NSLog(@"VIDEO BUFFER: %fs (%fs)", CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)), CMTimeGetSeconds(CMSampleBufferGetDuration(sampleBuffer)));
@@ -888,6 +893,18 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
     if (_needsSwitchBackToContinuousFocus) {
         _needsSwitchBackToContinuousFocus = NO;
         [self continuousFocusAtPoint:self.focusPointOfInterest];
+    }
+}
+
+- (void)changeCameraInputDeviceisFront:(BOOL)isFront{
+    if (isFront) {
+        if (self.device != AVCaptureDevicePositionFront) {
+            self.device = AVCaptureDevicePositionFront;
+        }
+    } else {
+        if (self.device != AVCaptureDevicePositionBack) {
+            self.device = AVCaptureDevicePositionBack;
+        }
     }
 }
 
@@ -966,6 +983,22 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
             videoConnection.videoMirrored = videoMirrored;
         }
     }
+}
+
+- (AVCaptureDevice*)audioDevice {
+    if (!self.audioConfiguration.enabled) {
+        return nil;
+    }
+    
+    return [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
+}
+
+- (AVCaptureDevice*)videoDevice {
+    if (!self.videoConfiguration.enabled) {
+        return nil;
+    }
+    
+    return [SCRecorderTools videoDeviceForPosition:_device];
 }
 
 - (void)configureDevice:(AVCaptureDevice*)newDevice mediaType:(NSString*)mediaType error:(NSError**)error {
@@ -1223,22 +1256,6 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
     }
     
     return nil;
-}
-
-- (AVCaptureDevice*)audioDevice {
-    if (!self.audioConfiguration.enabled) {
-        return nil;
-    }
-    
-    return [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-}
-
-- (AVCaptureDevice*)videoDevice {
-    if (!self.videoConfiguration.enabled) {
-        return nil;
-    }
-    
-    return [SCRecorderTools videoDeviceForPosition:_device];
 }
 
 - (AVCaptureVideoOrientation)actualVideoOrientation {

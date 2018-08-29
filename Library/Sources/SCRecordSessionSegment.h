@@ -10,17 +10,20 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
-@interface SCRecordSessionSegment : NSObject
+@interface SCRecordSessionSegment : NSObject<NSCoding, NSCopying>
 
 /**
  The url containing the segment data
  */
 @property (strong, nonatomic) NSURL *__nonnull url;
 
+/* 视频的选择速率 */
+@property(nonatomic ,assign) NSInteger CameraVideoSelectRate;
+
 /**
  The AVAsset created from the url.
  */
-@property (readonly, nonatomic) AVAsset *__nullable asset;
+@property (strong, nonatomic) AVAsset *__nullable asset;
 
 /**
  The duration of this segment

@@ -12,6 +12,9 @@
 
 #pragma mark - Private definition
 
+//多段录制视频存放文件夹
+#define kCameraVideoGather @"BSQVideoShootGather"
+
 NSString * const SCRecordSessionSegmentFilenamesKey = @"RecordSegmentFilenames";
 NSString * const SCRecordSessionSegmentsKey = @"Segments";
 NSString * const SCRecordSessionSegmentFilenameKey = @"Filename";
@@ -119,8 +122,9 @@ NSString * const SCRecordSessionDocumentDirectory = @"DocumentDirectory";
         _currentSegmentDuration = kCMTimeZero;
         _segmentsDuration = kCMTimeZero;
         _date = [NSDate date];
-        _segmentsDirectory = SCRecordSessionTemporaryDirectory;
-        _identifier = [NSString stringWithFormat:@"%@-", [SCRecordSession newIdentifier:12]];
+        _segmentsDirectory = SCRecordSessionDocumentDirectory;
+//        _identifier = [NSString stringWithFormat:@"%@-", [SCRecordSession newIdentifier:12]];
+        _identifier = @"BQS";
         _audioQueue = dispatch_queue_create("me.corsin.SCRecorder.Audio", nil);
     }
     
@@ -277,7 +281,21 @@ NSString * const SCRecordSessionDocumentDirectory = @"DocumentDirectory";
     NSString *extension = [self _suggestedFileExtension];
 
     if (extension != nil) {
-        NSString *filename = [NSString stringWithFormat:@"%@SCVideo.%d.%@", _identifier, _currentSegmentCount, extension];
+        //这边用来判断是否存在文件夹
+        NSArray *myPathList = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [myPathList objectAtIndex:0];
+        NSString  *filenameGather = kCameraVideoGather;
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSString *filePath = [documentsDirectory stringByAppendingPathComponent:filenameGather];
+        if (![fileManager fileExistsAtPath:filePath]) {
+            NSLog(@"文件不存在");
+//            [fileManager createFileAtPath:filePath contents:nil attributes:nil];
+            [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:nil];
+        } else {
+            NSLog(@"文件存在");
+        }
+        
+        NSString *filename = [NSString stringWithFormat:@"%@/%@SCVideo.%d.%@",kCameraVideoGather, _identifier, _segments.count, extension];
         NSURL *file = [SCRecordSessionSegment segmentURLForFilename:filename andDirectory:self.segmentsDirectory];
         
         [self removeFile:file];
