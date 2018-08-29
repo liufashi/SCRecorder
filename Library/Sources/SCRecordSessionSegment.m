@@ -22,20 +22,20 @@
 // 直接添加以下代码即可自动完成
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [self encodeWithCoder:aCoder];
+    [self modelEncodeWithCoder:aCoder];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
-    self = [self initWithCoder:aDecoder];
+    self = [self modelInitWithCoder:aDecoder];
     self.asset = [AVAsset assetWithURL:self.url];
     return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    return [self copyWithZone:zone];
+    return [self modelCopy];
 }
 
 - (instancetype)initWithDictionaryRepresentation:(NSDictionary *)dictionary directory:(NSString *)directory {
