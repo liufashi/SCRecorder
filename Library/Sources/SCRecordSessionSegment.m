@@ -8,6 +8,7 @@
 
 #import "SCRecordSessionSegment.h"
 #import "SCRecordSession.h"
+#import "NSObject+YYModel.h"
 
 @interface SCRecordSessionSegment() {
     AVAsset *_asset;
