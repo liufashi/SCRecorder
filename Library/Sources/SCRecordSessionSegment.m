@@ -18,23 +18,23 @@
 @end
 
 @implementation SCRecordSessionSegment
-//// 直接添加以下代码即可自动完成
+// 直接添加以下代码即可自动完成
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    [self modelEncodeWithCoder:aCoder];
+    [self encodeWithCoder:aCoder];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super init];
-    self = [self modelInitWithCoder:aDecoder];
+    self = [self initWithCoder:aDecoder];
     self.asset = [AVAsset assetWithURL:self.url];
     return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    return [self modelCopy];
+    return [self copyWithZone:zone];
 }
 
 - (instancetype)initWithDictionaryRepresentation:(NSDictionary *)dictionary directory:(NSString *)directory {
