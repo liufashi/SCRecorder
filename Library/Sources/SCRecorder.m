@@ -83,7 +83,7 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
 		_mirrorOnFrontCamera = NO;
 		_automaticallyConfiguresApplicationAudioSession = YES;
 		
-        self.device = AVCaptureDevicePositionBack;
+//        self.device = AVCaptureDevicePositionBack;
         _videoConfiguration = [SCVideoConfiguration new];
         _audioConfiguration = [SCAudioConfiguration new];
         _photoConfiguration = [SCPhotoConfiguration new];
