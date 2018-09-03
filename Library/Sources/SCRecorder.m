@@ -85,18 +85,20 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
 		_automaticallyConfiguresApplicationAudioSession = YES;
 		
 //        self.device = AVCaptureDevicePositionBack;
-        //设置拍摄方向
-        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-        BOOL isFront = NO;
-        NSNumber *isHaveKey = [userDefaults objectForKey:@"frontCameraStatusKEY"];
-        if (isHaveKey) {
-            isFront = isHaveKey.boolValue;
-        }
-        if (isFront) {
-            self.device = AVCaptureDevicePositionFront;
-        } else {
-            self.device = AVCaptureDevicePositionBack;
-        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            //设置拍摄方向
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            BOOL isFront = NO;
+            NSNumber *isHaveKey = [userDefaults objectForKey:@"frontCameraStatusKEY"];
+            if (isHaveKey) {
+                isFront = isHaveKey.boolValue;
+            }
+            if (isFront) {
+                self.device = AVCaptureDevicePositionFront;
+            } else {
+                self.device = AVCaptureDevicePositionBack;
+            }
+        });
 
         _videoConfiguration = [SCVideoConfiguration new];
         _audioConfiguration = [SCAudioConfiguration new];
