@@ -30,6 +30,7 @@
     BOOL _shouldAutoresumeRecording;
     BOOL _needsSwitchBackToContinuousFocus;
     BOOL _adjustingFocus;
+    BOOL _isVideoMirrored;
     int _beginSessionConfigurationCount;
     double _lastAppendedVideoTime;
     NSTimer *_movieOutputProgressTimer;
@@ -844,6 +845,19 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
     
     if (captureOutput == _videoOutput && _SCRorderdelegate && [_SCRorderdelegate respondsToSelector:@selector(SCRecordercaptureOutput:didOutputSampleBuffer:fromConnection:)]) {
         [_SCRorderdelegate SCRecordercaptureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:sampleBuffer fromConnection:(AVCaptureConnection *)connection];
+        
+        if (!_isVideoMirrored) {
+            // 前置摄像头镜像翻转
+            AVCaptureDevicePosition currentPosition = self.device;
+            if (currentPosition == AVCaptureDevicePositionUnspecified || currentPosition == AVCaptureDevicePositionFront) {
+                if (!connection.videoMirrored) {
+                    connection.videoMirrored = YES;
+                }
+            } else {
+                connection.videoMirrored = NO;
+            }
+            _isVideoMirrored = YES;
+        }
     }
     
     if (captureOutput == _videoOutput) {
@@ -918,6 +932,15 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
         if (self.device != AVCaptureDevicePositionBack) {
             self.device = AVCaptureDevicePositionBack;
         }
+    }
+    
+    AVCaptureConnection *videoConnection = [self videoConnection];
+    // 前置摄像头翻转
+    AVCaptureDevicePosition currentPosition = self.device;
+    if (currentPosition == AVCaptureDevicePositionUnspecified || currentPosition == AVCaptureDevicePositionFront) {
+        videoConnection.videoMirrored = YES;
+    } else {
+        videoConnection.videoMirrored = NO;
     }
 }
 
