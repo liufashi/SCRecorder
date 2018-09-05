@@ -83,22 +83,19 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
         _resetZoomOnChangeDevice = YES;
 		_mirrorOnFrontCamera = NO;
 		_automaticallyConfiguresApplicationAudioSession = YES;
-		
-//        self.device = AVCaptureDevicePositionBack;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            //设置拍摄方向
-            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-            BOOL isFront = NO;
-            NSNumber *isHaveKey = [userDefaults objectForKey:@"frontCameraStatusKEY"];
-            if (isHaveKey) {
-                isFront = isHaveKey.boolValue;
-            }
-            if (isFront) {
-                self.device = AVCaptureDevicePositionFront;
-            } else {
-                self.device = AVCaptureDevicePositionBack;
-            }
-        });
+        
+        //设置拍摄方向
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        BOOL isFront = NO;
+        NSNumber *isHaveKey = [userDefaults objectForKey:@"frontCameraStatusKEY"];
+        if (isHaveKey) {
+            isFront = isHaveKey.boolValue;
+        }
+        if (isFront) {
+            _device = AVCaptureDevicePositionFront;
+        } else {
+            _device = AVCaptureDevicePositionBack;
+        }
 
         _videoConfiguration = [SCVideoConfiguration new];
         _audioConfiguration = [SCAudioConfiguration new];
@@ -845,23 +842,6 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     
-    if (captureOutput == _videoOutput && _SCRorderdelegate && [_SCRorderdelegate respondsToSelector:@selector(SCRecordercaptureOutput:didOutputSampleBuffer:fromConnection:)]) {
-        [_SCRorderdelegate SCRecordercaptureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:sampleBuffer fromConnection:(AVCaptureConnection *)connection];
-        
-        if (!_isVideoMirrored) {
-            // 前置摄像头镜像翻转
-            AVCaptureDevicePosition currentPosition = self.device;
-            if (currentPosition == AVCaptureDevicePositionUnspecified || currentPosition == AVCaptureDevicePositionFront) {
-                if (!connection.videoMirrored) {
-                    connection.videoMirrored = YES;
-                }
-            } else {
-                connection.videoMirrored = NO;
-            }
-            _isVideoMirrored = YES;
-        }
-    }
-    
     if (captureOutput == _videoOutput) {
         _lastVideoBuffer.sampleBuffer = sampleBuffer;
 //        NSLog(@"VIDEO BUFFER: %fs (%fs)", CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer)), CMTimeGetSeconds(CMSampleBufferGetDuration(sampleBuffer)));
@@ -934,15 +914,6 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
         if (self.device != AVCaptureDevicePositionBack) {
             self.device = AVCaptureDevicePositionBack;
         }
-    }
-    
-    AVCaptureConnection *videoConnection = [self videoConnection];
-    // 前置摄像头翻转
-    AVCaptureDevicePosition currentPosition = self.device;
-    if (currentPosition == AVCaptureDevicePositionUnspecified || currentPosition == AVCaptureDevicePositionFront) {
-        videoConnection.videoMirrored = YES;
-    } else {
-        videoConnection.videoMirrored = NO;
     }
 }
 

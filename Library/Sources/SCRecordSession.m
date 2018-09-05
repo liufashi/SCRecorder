@@ -280,7 +280,7 @@ NSString * const SCRecordSessionDocumentDirectory = @"DocumentDirectory";
 - (NSURL *)nextFileURL:(NSError **)error {
     NSString *extension = [self _suggestedFileExtension];
 
-    if (extension != nil) {
+    if (extension != nil && self.recordSegmentStart) {
         //这边用来判断是否存在文件夹
         NSArray *myPathList = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [myPathList objectAtIndex:0];

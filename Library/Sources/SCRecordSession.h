@@ -37,6 +37,7 @@ extern NSString *__nonnull const SCRecordSessionDocumentDirectory;
 //////////////////
 // GENERAL SETTINGS
 ////
+@property (assign, nonatomic) BOOL recordSegmentStart;
 
 /**
  An unique identifier generated when creating this record session.
