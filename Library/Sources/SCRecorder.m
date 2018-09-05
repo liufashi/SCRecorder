@@ -81,7 +81,7 @@ static char* SCRecorderPhotoOptionsContext = "PhotoOptionsContext";
         _lastAudioBuffer = [SCSampleBufferHolder new];
         _maxRecordDuration = kCMTimeInvalid;
         _resetZoomOnChangeDevice = YES;
-		_mirrorOnFrontCamera = NO;
+		_mirrorOnFrontCamera = YES;
 		_automaticallyConfiguresApplicationAudioSession = YES;
         
         //设置拍摄方向
